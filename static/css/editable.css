@@ -1,0 +1,14 @@
+.panel {
+    padding: 15px;
+    margin: 0 15px 15px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    background-color: #F7F7F7;
+}
+
+.panel-light {
+    padding: 15px;
+    margin: 0 15px 15px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+}
