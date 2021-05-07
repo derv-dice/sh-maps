@@ -1,3 +1,6 @@
 server:
   addr: localhost
   port: 8080
+
+service:
+  update_rate: 0h1m0s

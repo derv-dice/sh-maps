@@ -1,0 +1,22 @@
+{{define "page"}}
+    <div id="map" class="mapplic-sidebar-right"></div>
+
+    <script>
+        $(function () {
+            $('#map').mapplic({
+                source: '{{.Data.CfgURL}}',
+                height: 'auto',
+                sidebar: true,
+                hovertip: true,
+                hovertipdesc: true,
+                maxscale: 3,
+                fullscreen: true,
+                mapfill: true,
+            });
+
+            // TODO Включение полноэкранного режима по умолчанию
+        })
+
+
+    </script>
+{{end}}

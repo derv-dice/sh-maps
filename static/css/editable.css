@@ -1,14 +1,23 @@
-.panel {
-    padding: 15px;
-    margin: 0 15px 15px 15px;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
-    background-color: #F7F7F7;
+.hidden,
+.hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
-.panel-light {
-    padding: 15px;
-    margin: 0 15px 15px 15px;
-    border: 1px solid #dee2e6;
-    border-radius: .25rem;
+/* @override Bootstrap */
+.btn:focus, .btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.form-select:focus, .form-select:active {
+    outline: none !important;
+    box-shadow: none !important;
 }

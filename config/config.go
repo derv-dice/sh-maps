@@ -1,32 +1,80 @@
 package config
 
 import (
+	"bufio"
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
+	"path/filepath"
+	"regexp"
+	"sh-maps/utils"
 	"time"
 
 	"github.com/gobuffalo/packr/v2"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
-var Cfg = &Config{}
-var Static *packr.Box
-var Templates *packr.Box
+const (
+	CfgName         = "config.json"
+	staticPath      = "../static"
+	templatesPath   = "../templates"
+	MapsStaticPath  = `map-static`
+	BuildingCfgPath = `b-cfg`
+	addrHttpTmpl    = `http://%s`
+	addrHttpsTmpl   = `https://%s`
+	paramName       = "name"
+	mapJsonKeyTmpl  = `"map":"%s.svg"`
+)
+
+var (
+	Cfg                   = &Config{}
+	Static                *packr.Box
+	Templates             *packr.Box
+	BuildingConfigs       = BuildingConfigMap{}
+	UniversityDescription = &UniDescription{}
+	rxKeyMap              = regexp.MustCompile(`"map"\s*:\s*"(?P<name>[A-Za-z0-9_-]+)\.svg"`)
+)
 
 type Config struct {
 	Server struct {
-		Addr string `yaml:"addr"`
-		Port int    `yaml:"port"`
+		Addr  string `yaml:"addr"`
+		Https struct {
+			Enabled bool   `yaml:"enabled"`
+			Cert    string `yaml:"cert"`
+			Key     string `yaml:"key"`
+		} `yaml:"https"`
 	} `yaml:"server"`
+	Log struct {
+		NoLog      bool   `yaml:"no_log"`
+		TraceLevel string `yaml:"trace_level"`
+		LogDir     string `yaml:"log_dir"`
+	} `yaml:"log"`
+	MapsDir string `yaml:"maps_dir"`
 }
 
-const (
-	staticPath    = "../static"
-	templatesPath = "../templates"
-)
+type BuildingConfigMap map[string]*BuildingConfig
+
+type UniDescription struct {
+	Abbreviation string `json:"abbreviation"` // Аббревиатура вуза
+	FullName     string `json:"full_name"`    // Полное название вуза
+	Icon         string `json:"icon"`         // Ссылка на герб вуза
+}
+
+type MapsCfg struct {
+	Description *UniDescription   `json:"description"`
+	Buildings   []*BuildingConfig `json:"buildings"`
+}
+
+type BuildingConfig struct {
+	Name           string `json:"name"`
+	Dir            string `json:"dir"`
+	Address        string `json:"address"`
+	BuildingConfig []byte `json:"-"`
+}
 
 func (c *Config) Load() (err error) {
 	log.Println("Загрузка статики")
@@ -43,11 +91,21 @@ func (c *Config) Load() (err error) {
 	return yaml.Unmarshal(data, &c)
 }
 
-// LogToFile - Включить логирование в файл ./logs/filename.log
-func LogToFile() (err error) {
+// RemoteAddrTmpl - Возвращает https://%s или http://%s в зависимости от настроек сервера
+func RemoteAddrTmpl() (addrTmpl string) {
+	if Cfg.Server.Https.Enabled {
+		addrTmpl = addrHttpsTmpl
+	} else {
+		addrTmpl = addrHttpTmpl
+	}
+	return
+}
+
+// LogToFile - Включить логирование в файл
+func LogToFile(dir string) (err error) {
 	// Создаем директорию логов, если ее нет
-	if _, err = os.Stat("logs"); os.IsNotExist(err) {
-		if err = os.MkdirAll("logs", 0777); err != nil {
+	if _, err = os.Stat(dir); os.IsNotExist(err) {
+		if err = os.MkdirAll(dir, 0777); err != nil {
 			return
 		}
 	}
@@ -62,5 +120,76 @@ func LogToFile() (err error) {
 	// Выключаем вывод стандартного логера в созданный файл и терминал
 	mw := io.MultiWriter(os.Stdout, file)
 	log.SetOutput(mw)
+
+	var lvl log.Level
+	if lvl, err = log.ParseLevel(Cfg.Log.TraceLevel); err != nil {
+		log.SetLevel(lvl)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+	return
+}
+
+// PrepareBuildingsConfig - подготовка конфигов карт
+func PrepareBuildingsConfig() (err error) {
+	if Cfg.MapsDir == "" {
+		return fmt.Errorf("не указана директория с файлами карт (svg, config.json)")
+	}
+
+	if _, err = os.Stat(Cfg.MapsDir); os.IsNotExist(err) {
+		return err
+	}
+
+	// Парсинг главного конфига карт в корне директории
+	var data []byte
+	if data, err = os.ReadFile(filepath.Join(Cfg.MapsDir, CfgName)); err != nil {
+		return
+	}
+	mc := MapsCfg{Buildings: []*BuildingConfig{}}
+	if err = json.Unmarshal(data, &mc); err != nil {
+		return
+	}
+
+	UniversityDescription = mc.Description
+
+	// Подготовка конфигов, описывающих конкретное здание/корпус универа
+	for i := range mc.Buildings {
+		bDir := filepath.Join(Cfg.MapsDir, mc.Buildings[i].Dir)
+		var bCfgStr string
+		if bCfgStr, err = prepareSingleBuildingCfg(
+			mc.Buildings[i].Dir,
+			filepath.Join(bDir, CfgName),
+		); err != nil {
+			return err
+		}
+
+		mc.Buildings[i].BuildingConfig = []byte(bCfgStr)
+		BuildingConfigs[mc.Buildings[i].Dir] = mc.Buildings[i]
+	}
+	return
+}
+
+// prepareSingleBuildingCfg - Добавление в конфиги url сервера перед названиями файлов .svg
+func prepareSingleBuildingCfg(dir, filename string) (prepared string, err error) {
+	// Чтение конфига построчно и замена имен файлов на ссылки 4a.svg --> http://.../4a.svg
+	var file *os.File
+	file, err = os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	s := bufio.NewScanner(file)
+	for s.Scan() {
+		line := s.Text()
+
+		if rxKeyMap.MatchString(line) {
+			pm := utils.GetRxParams(rxKeyMap, line)
+			line = rxKeyMap.ReplaceAllString(line, fmt.Sprintf(mapJsonKeyTmpl, fmt.Sprintf(RemoteAddrTmpl(), path.Join(Cfg.Server.Addr, MapsStaticPath, dir, pm[paramName]))))
+		}
+		prepared += line
+	}
+
+	err = s.Err()
 	return
 }

@@ -5,7 +5,7 @@ build:
 	@packr2 build
 	@go build -o bin/server main.go
 	@packr2 clean
-	@rm admin_template
+	@rm sh-maps
 	@echo "Проект собран и находится в ./bin/server"
 
 run: build
@@ -13,5 +13,5 @@ run: build
 	@cd bin && ./server
 
 test: build
-	@echo "Запуск сервера в тестовом режиме без логирования в файл"
+	@echo "Запуск сервера без логирования в файл"
 	@cd bin && ./server -nolog

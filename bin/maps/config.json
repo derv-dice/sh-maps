@@ -1,0 +1,24 @@
+{
+  "description": {
+    "abbreviation": "КГУ",
+    "full_name": "Калужский Государственный Институт им. К.Э. Циолковского",
+    "icon": "https://tksu.ru/include/logo.png"
+  },
+  "buildings": [
+    {
+      "dir": "c1",
+      "name": "Корпус 1",
+      "address": "ул. Степана Разина, 26"
+    },
+    {
+      "dir": "c2",
+      "name": "Корпус 2",
+      "address": ""
+    },
+    {
+      "dir": "c1_new",
+      "name": "Корпус 1, Новый",
+      "address": "Адрес"
+    }
+  ]
+}

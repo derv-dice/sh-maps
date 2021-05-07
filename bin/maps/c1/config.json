@@ -1,0 +1,82 @@
+{
+  "developer": true,
+  "mapwidth": "1000",
+  "mapheight": "1000",
+  "sidebartoggle": true,
+  "alphabetic": true,
+  "mapfill": true,
+  "categories": [
+    {
+      "id": "study",
+      "title": "Учебные аудитории"
+    },
+    {
+      "id": "wc",
+      "title": "Санузел"
+    },
+    {
+      "id": "st",
+      "title": "Лестницы и лифты"
+    }
+  ],
+  "levels": [
+    {
+      "id": "fl-3",
+      "title": "3 Этаж",
+      "map": "f3.svg",
+      "locations": [
+        {
+          "id": "3fl-st-1",
+          "title": "Лестница 1",
+          "about": "about",
+          "description": "Описание",
+          "category": "st",
+          "x": "0.0573",
+          "y": "0.4268",
+          "zoom": "3",
+          "pin": "pin-triangle pin-label"
+        },
+        {
+          "id": "3fl-st-1",
+          "title": "Лестница 1",
+          "about": "about",
+          "description": "Описание",
+          "category": "st",
+          "x": "0.0573",
+          "y": "0.4268",
+          "zoom": "3",
+          "pin": "pin-triangle pin-label"
+        }
+      ]
+    },
+    {
+      "id": "fl-4",
+      "title": "4 Этаж",
+      "map": "f3.svg",
+      "locations": [
+        {
+          "id": "3fl-st-1",
+          "title": "Лестница 1",
+          "about": "about",
+          "description": "Описание",
+          "category": "st",
+          "x": "0.0573",
+          "y": "0.4268",
+          "zoom": "3",
+          "pin": "pin-triangle pin-label"
+        },
+        {
+          "id": "3fl-st-1",
+          "title": "Лестница 1",
+          "about": "about",
+          "description": "Описание",
+          "category": "st",
+          "x": "0.0573",
+          "y": "0.4268",
+          "zoom": "3",
+          "pin": "pin-triangle pin-label"
+        }
+      ]
+    }
+  ]
+}

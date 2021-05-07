@@ -1,34 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
-    <title>Admin Template</title>
-    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/6ebb323cdb.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/static/css/lazy/lazy.css">
-    <link rel="stylesheet" href="/static/css/prism/prism.css">
-    <link rel="stylesheet" href="/static/css/pnotify/PNotify.css">
-    <link rel="stylesheet" href="/static/css/editable.css">
+    <meta name="viewport" content="width=device-width">
+    <title>Карты {{$.Data.Description.Abbreviation}}</title>
+    <link rel="icon" href='{{$.SelfAddr}}/static/images/site-icon.png'>
 
+    <script src="https://kit.fontawesome.com/6ebb323cdb.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.rtl.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-grid.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-grid.rtl.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-reboot.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-reboot.rtl.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-utilities.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap-utilities.rtl.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/magnific-popup.css">
+    <link rel="stylesheet" href="/static/css/mapplic.css">
+    <link rel="stylesheet" href="/static/css/editable.css"> <!-- Должен импортироваться последним -->
 </head>
 
 <body>
-    <script src="/static/js/jquery/jquery.min.js"></script>
-    <script src="/static/js/jquery/ajaxfile.js"></script>
-    <script src="/static/js/jquery/jquery.filter.js"></script>
-    <script src="/static/js/popper/popper.min.js"></script>
-    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
-    <script src="/static/js/nouislider/nouislider.min.js"></script>
-    <script src="/static/js/pnotify/PNotify.js"></script>
-    <script src="/static/js/lazy/lazy.js"></script>
-    <script src="/static/js/editable.js"></script>
+<script src="/static/js/jquery/jquery.min.js"></script>
+<script src="/static/js/jquery/jquery.mousewheel.js"></script>
+<script src="/static/js/jquery/jquery.ajax.file.js"></script>
+<script src="/static/js/bootstrap/bootstrap.js"></script>
+<script src="/static/js/bootstrap/bootstrap.bundle.js"></script>
+<script src="/static/js/bootstrap/bootstrap.esm.js"></script>
+<script src="/static/js/mapplic.js"></script>
+<script src="/static/js/bootstrap/magnific-popup.js"></script>
+<script src="/static/js/editable.js"></script> <!-- Должен импортироваться последним -->
 
-    <div id="wrapper">
-        {{template "navigation"}}
-        <div id="page-wrapper">
-            {{template "page"}}
-        </div>
-    </div>
+{{template "page" .}}
+
+<!-- Flexbox container for aligning the toasts -->
+<div id="toast-area" aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center"
+     style="min-height: 200px;">
+</div>
 </body>
 </html>

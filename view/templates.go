@@ -1,27 +1,31 @@
 package view
 
 import (
-	. "admin_template/config"
 	"html/template"
+
+	. "sh-maps/config"
 )
 
 // Название страницы
 const (
-	pgHome = "home"
+	PgMaps = "maps"
+	PgMap  = "map"
 )
 
-// Расположение шаблонов /templates/...
+// Расположение шаблонов /templates/:tmpl_name.gohtml
 const (
-	tmplBase       = "layout/base.gohtml"
-	tmplNavigation = "layout/navigation.gohtml"
-
-	tmplHomePage = "home/page.gohtml"
+	tmplBase     = "layout/base.gohtml"
+	tmplMapsPage = "pages/maps.gohtml"
+	tmplMapPage  = "pages/map.gohtml"
 )
 
 // tmplRequires - список шаблонов, требуемых для формирования конкретной страницы
 var tmplRequires = map[string][]string{
-	pgHome: {
-		tmplBase, tmplNavigation, tmplHomePage,
+	PgMaps: {
+		tmplBase, tmplMapsPage,
+	},
+	PgMap: {
+		tmplBase, tmplMapPage,
 	},
 }
 
