@@ -24,8 +24,6 @@ const (
 	templatesPath   = "../templates"
 	MapsStaticPath  = `map-static`
 	BuildingCfgPath = `b-cfg`
-	addrHttpTmpl    = `http://%s`
-	addrHttpsTmpl   = `https://%s`
 	paramName       = "name"
 	mapJsonKeyTmpl  = `"map":"%s.svg"`
 )
@@ -41,8 +39,9 @@ var (
 
 type Config struct {
 	Server struct {
-		Addr  string `yaml:"addr"`
-		Https struct {
+		RemoteAddr string `yaml:"remote_addr"`
+		Addr       string `yaml:"addr"`
+		Https      struct {
 			Enabled bool   `yaml:"enabled"`
 			Cert    string `yaml:"cert"`
 			Key     string `yaml:"key"`
@@ -89,16 +88,6 @@ func (c *Config) Load() (err error) {
 		return
 	}
 	return yaml.Unmarshal(data, &c)
-}
-
-// RemoteAddrTmpl - Возвращает https://%s или http://%s в зависимости от настроек сервера
-func RemoteAddrTmpl() (addrTmpl string) {
-	if Cfg.Server.Https.Enabled {
-		addrTmpl = addrHttpsTmpl
-	} else {
-		addrTmpl = addrHttpTmpl
-	}
-	return
 }
 
 // LogToFile - Включить логирование в файл
@@ -185,7 +174,7 @@ func prepareSingleBuildingCfg(dir, filename string) (prepared string, err error)
 
 		if rxKeyMap.MatchString(line) {
 			pm := utils.GetRxParams(rxKeyMap, line)
-			line = rxKeyMap.ReplaceAllString(line, fmt.Sprintf(mapJsonKeyTmpl, fmt.Sprintf(RemoteAddrTmpl(), path.Join(Cfg.Server.Addr, MapsStaticPath, dir, pm[paramName]))))
+			line = rxKeyMap.ReplaceAllString(line, fmt.Sprintf(mapJsonKeyTmpl, fmt.Sprintf("%s/%s",Cfg.Server.RemoteAddr, path.Join(MapsStaticPath, dir, pm[paramName]))))
 		}
 		prepared += line
 	}

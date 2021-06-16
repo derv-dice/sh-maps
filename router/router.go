@@ -20,7 +20,7 @@ func Mux() http.Handler {
 	r.GET(fmt.Sprintf("/%s/:building", BuildingCfgPath), handlers.BuildingConfigHandler) // Получение конфига определенного корпуса
 	r.GET("/maps", handlers.AllMapsHandler)                                              // Вывод списка всех корпусов
 	r.GET("/maps/:building", handlers.SingleMapHandler)                                  // Отрисовка карты определенного корпуса
-	r.GET("/mapplic-icons.svg", handlers.MapsIconsSVG)                       // Костыль для проброса файла с иконками для mapplic
+	r.GET("/mapplic-icons.svg", handlers.MapsIconsSVG)                                   // Костыль для проброса файла с иконками для mapplic
 
 	// Добавление middleware
 	h := accessLog(r)

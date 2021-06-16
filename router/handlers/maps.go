@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"path"
 
@@ -12,10 +13,14 @@ import (
 )
 
 func AllMapsHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	view.Render(w, view.PgMaps, NewBaseCtx().
+	err := view.Render(w, view.PgMaps, NewBaseCtx().
 		Add("Buildings", BuildingConfigs).
 		Add("Description", UniversityDescription),
 	)
+
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func SingleMapHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -25,8 +30,11 @@ func SingleMapHandler(w http.ResponseWriter, r *http.Request, p httprouter.Param
 		return
 	}
 
-	cfgUrl := fmt.Sprintf(RemoteAddrTmpl(), path.Join(Cfg.Server.Addr, BuildingCfgPath, building))
-	view.Render(w, view.PgMap, NewBaseCtx().Add("CfgURL", cfgUrl))
+	cfgUrl := fmt.Sprintf("%s/%s", Cfg.Server.RemoteAddr, path.Join(BuildingCfgPath, building))
+	err := view.Render(w, view.PgMap, NewBaseCtx().Add("CfgURL", cfgUrl))
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 // BuildingConfigHandler - Конфиг для определенного здания

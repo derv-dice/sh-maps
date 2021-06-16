@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"sh-maps/config"
 )
 
 type BaseCtx struct {
-	SelfAddr string                 `json:"self_addr"`
-	Data     map[string]interface{} `json:"data"`
+	RemoteAddr string                 `json:"self_addr"`
+	Data       map[string]interface{} `json:"data"`
 }
 
 func (b *BaseCtx) Add(key string, val interface{}) *BaseCtx {
@@ -20,6 +19,6 @@ func (b *BaseCtx) Add(key string, val interface{}) *BaseCtx {
 
 func NewBaseCtx() *BaseCtx {
 	return &BaseCtx{
-		SelfAddr: fmt.Sprintf(config.RemoteAddrTmpl(), config.Cfg.Server.Addr),
+		RemoteAddr: config.Cfg.Server.RemoteAddr,
 	}
 }

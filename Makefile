@@ -12,6 +12,10 @@ run: build
 	@echo "Запуск сервера"
 	@cd bin && ./server
 
-test: build
-	@echo "Запуск сервера без логирования в файл"
-	@cd bin && ./server -nolog
+docker_build: build
+	@echo "Сборка docker образа"
+	@sudo docker build -t sh-maps:v0.5.0 .
+
+docker_run: docker_build
+	@echo "Запуск контейнера"
+	@sudo docker run --rm -it -p 127.0.0.1:8080:8080 -w /maps sh-maps:v0.5.0 ./server

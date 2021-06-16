@@ -1,6 +1,13 @@
 server:
-  addr: localhost
-  port: 8080
+  remote_addr: http://localhost:8080/
+  addr: :8080 # server address - ip:port
+  https:
+    enabled: false # enable HTTPS (it doesnt work yet)
+    cert: # path to .cert file
+    key: # path to .key file
 
-service:
-  update_rate: 0h1m0s
+maps_dir: maps # maps directory
+log:
+  no_log: false # disable logging
+  trace_level: info # panic, fatal, error, warning, info, debug, trace
+  log_dir: logs # logs directory
